@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
@@ -16,31 +17,24 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final RoleService roleService;
 
-    @GetMapping("/user")
-    public String viewHomePage(Model model, Principal principal) {
-        model.addAttribute("user", userService.findByUsername(principal.getName()));
-        return "user";
+    public UserController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/admin")
-    public String viewAdminHonePage(Model model) {
+    public String viewAdminHonePage(Model model, Principal principal) {
         model.addAttribute("listUsers", userService.getAllUsers());
-        return "admin1";
-    }
-
-    @GetMapping("/admin/showNewUserForm")
-    public String showNewUserForm(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        return "new_user";
+        model.addAttribute("listRoles", roleService.getAllRoles());
+        model.addAttribute("admin", userService.findByUsername(principal.getName()));
+        model.addAttribute("newUser", new User());
+        return "admin";
     }
 
     @PostMapping("/admin/saveUser")
-    public String saveUser(@ModelAttribute("user") User user) {
+    public String saveUser(@ModelAttribute("newUser") User user) {
         userService.saveUser(user);
         return "redirect:/admin";
     }
