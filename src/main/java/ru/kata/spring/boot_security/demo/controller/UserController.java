@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/admin")
     public String viewAdminHonePage(Model model) {
         model.addAttribute("listUsers", userService.getAllUsers());
-        return "admin";
+        return "admin1";
     }
 
     @GetMapping("/admin/showNewUserForm")
