@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -23,11 +24,15 @@ public class UserController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/admin")
+    @GetMapping("/home")
     public String viewAdminHonePage(Model model, Principal principal) {
         model.addAttribute("listUsers", userService.getAllUsers());
         model.addAttribute("listRoles", roleService.getAllRoles());
         model.addAttribute("admin", userService.findByUsername(principal.getName()));
+        model.addAttribute("adminRoles",userService.findByUsername(principal.getName()).getRoles()
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" ")));
         model.addAttribute("newUser", new User());
         return "admin";
     }
@@ -35,13 +40,13 @@ public class UserController {
     @PostMapping("/admin/saveUser")
     public String saveUser(@ModelAttribute("newUser") User user) {
         userService.saveUser(user);
-        return "redirect:/admin";
+        return "redirect:/home";
     }
 
-    @PostMapping("/admin/deleteUser")
-    public String deleteUser(@RequestParam(value = "id") long id) {
+    @PostMapping("/admin/deleteUser/{id}")
+    public String deleteUser(@PathVariable(value = "id") Long id) {
         this.userService.deleteUserById(id);
-        return "redirect:/admin";
+        return "redirect:/home";
     }
 
 }
