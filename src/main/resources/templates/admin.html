@@ -26,8 +26,8 @@
                 <div class="col-md-6 bg-dark text-white">
                     <h3 th:text="${admin.email}+' with roles '+${adminRoles}"></h3>
                 </div>
-                <div class="col-md-6 bg-dark text-secondary">
-                    <h5 class="text-right">Logout</h5>
+                <div class="col-md-6 bg-dark text-right" >
+                    <p><a th:href="@{/logout}"  style="color: gray">Logout</a></p>
                 </div>
             </div>
         </div>
