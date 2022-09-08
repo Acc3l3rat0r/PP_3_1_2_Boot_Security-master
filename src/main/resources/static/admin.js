@@ -1,5 +1,5 @@
 const url = 'http://localhost:8080/api/users'
-const container = document.querySelector('tbody')
+const container = document.getElementById('allUsersTableBody')
 
 const editModal = new bootstrap.Modal(document.getElementById('editModal'))
 const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'))
@@ -68,7 +68,6 @@ deleteForm.addEventListener('submit', (e) => {
     deleteModal.hide()
 })
 
-
 on(document, 'click', '.btnEdit', e => {
     const file = e.target.parentNode.parentNode
     document.getElementById('editId').value = file.children[0].innerHTML
@@ -98,15 +97,15 @@ editForm.addEventListener('submit', (e) => {
     const password = document.getElementById('editPassword').value
 
     $('#editRoles option').each(function () {
-        roles.forEach(r=>{
-            if (this.selected){
-                if (!(this.value.includes(r.name))){
+        roles.forEach(r => {
+            if (this.selected) {
+                if (!(this.value.includes(r.name))) {
                     addRole(this.value)
                 }
             }
         })
     })
-    postQuery(id, firstName, lastName, age, email, password,roles)
+    postQuery(id, firstName, lastName, age, email, password, roles)
     editModal.hide()
     roles = []
 })
@@ -155,16 +154,15 @@ function postQuery(id, firstName, lastName, age, email, password, roles) {
     })
 }
 
-
 function addRole(value) {
-    if (value.includes('ROLE_ADMIN')){
+    if (value.includes('ROLE_ADMIN')) {
         roles.push({
             id: '1',
             name: 'ROLE_ADMIN',
             users: null,
             authority: 'ROLE_ADMIN'
         })
-    } else if (value.includes('ROLE_USER')){
+    } else if (value.includes('ROLE_USER')) {
         roles.push({
             id: '2',
             name: 'ROLE_USER',
@@ -187,6 +185,3 @@ fetch(url)
     .then(response => response.json())
     .then(data => display(data))
     .catch(error => console.log(error))
-
-
-

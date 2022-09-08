@@ -36,7 +36,8 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Role> roles;
 
-    public User(){}
+    public User() {
+    }
 
     public Integer getAge() {
         return age;
