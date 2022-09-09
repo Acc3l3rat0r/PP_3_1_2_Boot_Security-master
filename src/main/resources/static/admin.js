@@ -132,9 +132,13 @@ newUserForm.addEventListener('submit', (e) => {
 })
 
 function postQuery(id, firstName, lastName, age, email, password, roles) {
+    let token = $("meta[name='_csrf']").attr("content");
+    let header = $("meta[name='_csrf_header']").attr("content");
     fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
+            [header]: token,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
