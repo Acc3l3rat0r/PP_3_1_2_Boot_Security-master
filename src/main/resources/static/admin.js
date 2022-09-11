@@ -56,9 +56,14 @@ on(document, 'click', '.btnDelete', e => {
 })
 deleteForm.addEventListener('submit', (e) => {
     e.preventDefault()
+    let token = $("meta[name='_csrf']").attr("content");
+    let header = $("meta[name='_csrf_header']").attr("content");
     const id = document.getElementById('deleteId').value
     fetch(url + `/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+            [header]: token,
+        }
     }).then(() => {
         fetch(url)
             .then(response => response.json())
