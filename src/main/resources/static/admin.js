@@ -106,6 +106,11 @@ editForm.addEventListener('submit', (e) => {
             if (this.selected) {
                 if (!(this.value.includes(r.name))) {
                     addRole(this.value)
+                    return false;
+                }else {
+                    roles = []
+                    roles.push(r)
+                    return false;
                 }
             }
         })
