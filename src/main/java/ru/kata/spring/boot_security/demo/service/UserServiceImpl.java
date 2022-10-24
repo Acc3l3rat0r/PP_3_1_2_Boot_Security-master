@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
@@ -31,7 +32,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveUser(User user) {
+        user.setUsername(user.getEmail());
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String bCryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(bCryptedPassword);
+        if (user.getId() != null) {
+            User temp = getUserById(user.getId());
+            for (Role r:temp.getRoles()){
+                if (user.getRoles().contains(r)){
+                    Set<Role> newRoles = new HashSet<>();
+                    newRoles.add(r);
+                    user.setRoles(newRoles);
+                    break;
+                }else {
+                    user.getRoles().addAll(temp.getRoles());
+                }
+            }
+        }
         this.userRepository.save(user);
+    }
+
+    public static Set<Role> differenceJava8(Set<Role> setOne, Set<Role> setTwo) {
+        Set<Role> result = new HashSet<>(setOne);
+        result.removeIf(setTwo::contains);
+        return result;
     }
 
     @Override
@@ -55,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
@@ -67,7 +91,7 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), rolesToAuthorities(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> rolesToAuthorities(Collection<Role> roles){
+    private Collection<? extends GrantedAuthority> rolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 }
