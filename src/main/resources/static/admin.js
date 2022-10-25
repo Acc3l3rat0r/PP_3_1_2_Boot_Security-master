@@ -25,10 +25,10 @@ const display = (users) => {
             </tr>`
     })
     container.innerHTML = result
-    let newRoleSelect = document.getElementById('newRole')
-    $('#newRole').empty()
-    newRoleSelect.add(new Option('ROLE_ADMIN', 'ROLE_ADMIN'))
-    newRoleSelect.add(new Option('ROLE_USER', 'ROLE_USER'))
+    // let newRoleSelect = document.getElementById('newRole')
+    // $('#newRole').empty()
+    // newRoleSelect.add(new Option('ROLE_ADMIN', 'ROLE_ADMIN'))
+    // newRoleSelect.add(new Option('ROLE_USER', 'ROLE_USER'))
 }
 
 const on = (element, event, selector, handler) => {
@@ -107,7 +107,7 @@ editForm.addEventListener('submit', (e) => {
                 if (!(this.value.includes(r.name))) {
                     addRole(this.value)
                     return false;
-                }else {
+                } else {
                     roles = []
                     roles.push(r)
                     return false;
@@ -127,8 +127,19 @@ newUserForm.addEventListener('submit', (e) => {
     const age = document.getElementById('newAge').value
     const email = document.getElementById('newEmail').value
     const password = document.getElementById('newPassword').value
-    const role = document.getElementById('newRole').value
-    addRole(role)
+    const role = document.getElementById('newRole')
+    var values = [];
+    if (role.multiple) {
+        for (var i = 0; i < role.options.length; i++) {
+            if (role.options[i].selected)
+                values.push(role.options[i].value);
+        }
+    } else {
+        values.push(role.value);
+    }
+    values.forEach(v => {
+        addRole(v)
+    })
     postQuery('', firstName, lastName, age, email, password, roles)
     roles = []
     let navTable = document.getElementById('userTable')
