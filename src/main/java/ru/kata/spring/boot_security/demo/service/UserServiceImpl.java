@@ -34,28 +34,34 @@ public class UserServiceImpl implements UserService {
     public void saveUser(User user) {
         user.setUsername(user.getEmail());
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String bCryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        user.setPassword(bCryptedPassword);
         if (user.getId() != null) {
             User temp = getUserById(user.getId());
+            String passInBase = temp.getPassword();
+            String passInForm = user.getPassword();
+            if (passInBase.equals(passInForm)){
+                user.setPassword(passInBase);
+            }else {
+                user.setPassword(bCryptPasswordEncoder.encode(passInForm));
+            }
             for (Role r:temp.getRoles()){
-                if (user.getRoles().contains(r)){
-                    Set<Role> newRoles = new HashSet<>();
-                    newRoles.add(r);
-                    user.setRoles(newRoles);
-                    break;
+                if (user.getRoles()!=null){
+                    if (user.getRoles().contains(r)){
+                        Set<Role> newRoles = new HashSet<>();
+                        newRoles.add(r);
+                        user.setRoles(newRoles);
+                        break;
+                    }else {
+                        user.getRoles().addAll(temp.getRoles());
+                    }
                 }else {
-                    user.getRoles().addAll(temp.getRoles());
+                    user.setRoles(temp.getRoles());
+                    break;
                 }
             }
+        }else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
         this.userRepository.save(user);
-    }
-
-    public static Set<Role> differenceJava8(Set<Role> setOne, Set<Role> setTwo) {
-        Set<Role> result = new HashSet<>(setOne);
-        result.removeIf(setTwo::contains);
-        return result;
     }
 
     @Override
